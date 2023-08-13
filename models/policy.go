@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -24,12 +23,12 @@ import (
 
 // Policy is an object representing the database table.
 type Policy struct {
-	ID       null.Int64 `boil:"id" json:"id,omitempty" toml:"id" yaml:"id,omitempty"`
-	From     int64      `boil:"from" json:"from" toml:"from" yaml:"from"`
-	To       int64      `boil:"to" json:"to" toml:"to" yaml:"to"`
-	Port     int64      `boil:"port" json:"port" toml:"port" yaml:"port"`
-	Protocol string     `boil:"protocol" json:"protocol" toml:"protocol" yaml:"protocol"`
-	Desc     string     `boil:"desc" json:"desc" toml:"desc" yaml:"desc"`
+	ID       int64  `boil:"id" json:"id" toml:"id" yaml:"id"`
+	From     int64  `boil:"from" json:"from" toml:"from" yaml:"from"`
+	To       int64  `boil:"to" json:"to" toml:"to" yaml:"to"`
+	Port     int64  `boil:"port" json:"port" toml:"port" yaml:"port"`
+	Protocol string `boil:"protocol" json:"protocol" toml:"protocol" yaml:"protocol"`
+	Desc     string `boil:"desc" json:"desc" toml:"desc" yaml:"desc"`
 
 	R *policyR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L policyL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -69,38 +68,15 @@ var PolicyTableColumns = struct {
 
 // Generated where
 
-type whereHelperint64 struct{ field string }
-
-func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint64) NEQ(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint64) LT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint64) LTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint64) GT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint64) GTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperint64) IN(slice []int64) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperint64) NIN(slice []int64) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
 var PolicyWhere = struct {
-	ID       whereHelpernull_Int64
+	ID       whereHelperint64
 	From     whereHelperint64
 	To       whereHelperint64
 	Port     whereHelperint64
 	Protocol whereHelperstring
 	Desc     whereHelperstring
 }{
-	ID:       whereHelpernull_Int64{field: "\"policy\".\"id\""},
+	ID:       whereHelperint64{field: "\"policy\".\"id\""},
 	From:     whereHelperint64{field: "\"policy\".\"from\""},
 	To:       whereHelperint64{field: "\"policy\".\"to\""},
 	Port:     whereHelperint64{field: "\"policy\".\"port\""},
@@ -110,36 +86,15 @@ var PolicyWhere = struct {
 
 // PolicyRels is where relationship names are stored.
 var PolicyRels = struct {
-	ToSgroup   string
-	FromSgroup string
-}{
-	ToSgroup:   "ToSgroup",
-	FromSgroup: "FromSgroup",
-}
+}{}
 
 // policyR is where relationships are stored.
 type policyR struct {
-	ToSgroup   *Sgroup `boil:"ToSgroup" json:"ToSgroup" toml:"ToSgroup" yaml:"ToSgroup"`
-	FromSgroup *Sgroup `boil:"FromSgroup" json:"FromSgroup" toml:"FromSgroup" yaml:"FromSgroup"`
 }
 
 // NewStruct creates a new relationship struct
 func (*policyR) NewStruct() *policyR {
 	return &policyR{}
-}
-
-func (r *policyR) GetToSgroup() *Sgroup {
-	if r == nil {
-		return nil
-	}
-	return r.ToSgroup
-}
-
-func (r *policyR) GetFromSgroup() *Sgroup {
-	if r == nil {
-		return nil
-	}
-	return r.FromSgroup
 }
 
 // policyL is where Load methods for each relationship are stored.
@@ -431,370 +386,6 @@ func (q policyQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (boo
 	return count > 0, nil
 }
 
-// ToSgroup pointed to by the foreign key.
-func (o *Policy) ToSgroup(mods ...qm.QueryMod) sgroupQuery {
-	queryMods := []qm.QueryMod{
-		qm.Where("\"id\" = ?", o.To),
-	}
-
-	queryMods = append(queryMods, mods...)
-
-	return Sgroups(queryMods...)
-}
-
-// FromSgroup pointed to by the foreign key.
-func (o *Policy) FromSgroup(mods ...qm.QueryMod) sgroupQuery {
-	queryMods := []qm.QueryMod{
-		qm.Where("\"id\" = ?", o.From),
-	}
-
-	queryMods = append(queryMods, mods...)
-
-	return Sgroups(queryMods...)
-}
-
-// LoadToSgroup allows an eager lookup of values, cached into the
-// loaded structs of the objects. This is for an N-1 relationship.
-func (policyL) LoadToSgroup(ctx context.Context, e boil.ContextExecutor, singular bool, maybePolicy interface{}, mods queries.Applicator) error {
-	var slice []*Policy
-	var object *Policy
-
-	if singular {
-		var ok bool
-		object, ok = maybePolicy.(*Policy)
-		if !ok {
-			object = new(Policy)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybePolicy)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybePolicy))
-			}
-		}
-	} else {
-		s, ok := maybePolicy.(*[]*Policy)
-		if ok {
-			slice = *s
-		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybePolicy)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybePolicy))
-			}
-		}
-	}
-
-	args := make([]interface{}, 0, 1)
-	if singular {
-		if object.R == nil {
-			object.R = &policyR{}
-		}
-		if !queries.IsNil(object.To) {
-			args = append(args, object.To)
-		}
-
-	} else {
-	Outer:
-		for _, obj := range slice {
-			if obj.R == nil {
-				obj.R = &policyR{}
-			}
-
-			for _, a := range args {
-				if queries.Equal(a, obj.To) {
-					continue Outer
-				}
-			}
-
-			if !queries.IsNil(obj.To) {
-				args = append(args, obj.To)
-			}
-
-		}
-	}
-
-	if len(args) == 0 {
-		return nil
-	}
-
-	query := NewQuery(
-		qm.From(`sgroup`),
-		qm.WhereIn(`sgroup.id in ?`, args...),
-	)
-	if mods != nil {
-		mods.Apply(query)
-	}
-
-	results, err := query.QueryContext(ctx, e)
-	if err != nil {
-		return errors.Wrap(err, "failed to eager load Sgroup")
-	}
-
-	var resultSlice []*Sgroup
-	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice Sgroup")
-	}
-
-	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for sgroup")
-	}
-	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for sgroup")
-	}
-
-	if len(sgroupAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
-	if len(resultSlice) == 0 {
-		return nil
-	}
-
-	if singular {
-		foreign := resultSlice[0]
-		object.R.ToSgroup = foreign
-		if foreign.R == nil {
-			foreign.R = &sgroupR{}
-		}
-		foreign.R.ToPolicies = append(foreign.R.ToPolicies, object)
-		return nil
-	}
-
-	for _, local := range slice {
-		for _, foreign := range resultSlice {
-			if queries.Equal(local.To, foreign.ID) {
-				local.R.ToSgroup = foreign
-				if foreign.R == nil {
-					foreign.R = &sgroupR{}
-				}
-				foreign.R.ToPolicies = append(foreign.R.ToPolicies, local)
-				break
-			}
-		}
-	}
-
-	return nil
-}
-
-// LoadFromSgroup allows an eager lookup of values, cached into the
-// loaded structs of the objects. This is for an N-1 relationship.
-func (policyL) LoadFromSgroup(ctx context.Context, e boil.ContextExecutor, singular bool, maybePolicy interface{}, mods queries.Applicator) error {
-	var slice []*Policy
-	var object *Policy
-
-	if singular {
-		var ok bool
-		object, ok = maybePolicy.(*Policy)
-		if !ok {
-			object = new(Policy)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybePolicy)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybePolicy))
-			}
-		}
-	} else {
-		s, ok := maybePolicy.(*[]*Policy)
-		if ok {
-			slice = *s
-		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybePolicy)
-			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybePolicy))
-			}
-		}
-	}
-
-	args := make([]interface{}, 0, 1)
-	if singular {
-		if object.R == nil {
-			object.R = &policyR{}
-		}
-		if !queries.IsNil(object.From) {
-			args = append(args, object.From)
-		}
-
-	} else {
-	Outer:
-		for _, obj := range slice {
-			if obj.R == nil {
-				obj.R = &policyR{}
-			}
-
-			for _, a := range args {
-				if queries.Equal(a, obj.From) {
-					continue Outer
-				}
-			}
-
-			if !queries.IsNil(obj.From) {
-				args = append(args, obj.From)
-			}
-
-		}
-	}
-
-	if len(args) == 0 {
-		return nil
-	}
-
-	query := NewQuery(
-		qm.From(`sgroup`),
-		qm.WhereIn(`sgroup.id in ?`, args...),
-	)
-	if mods != nil {
-		mods.Apply(query)
-	}
-
-	results, err := query.QueryContext(ctx, e)
-	if err != nil {
-		return errors.Wrap(err, "failed to eager load Sgroup")
-	}
-
-	var resultSlice []*Sgroup
-	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice Sgroup")
-	}
-
-	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for sgroup")
-	}
-	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for sgroup")
-	}
-
-	if len(sgroupAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
-	if len(resultSlice) == 0 {
-		return nil
-	}
-
-	if singular {
-		foreign := resultSlice[0]
-		object.R.FromSgroup = foreign
-		if foreign.R == nil {
-			foreign.R = &sgroupR{}
-		}
-		foreign.R.FromPolicies = append(foreign.R.FromPolicies, object)
-		return nil
-	}
-
-	for _, local := range slice {
-		for _, foreign := range resultSlice {
-			if queries.Equal(local.From, foreign.ID) {
-				local.R.FromSgroup = foreign
-				if foreign.R == nil {
-					foreign.R = &sgroupR{}
-				}
-				foreign.R.FromPolicies = append(foreign.R.FromPolicies, local)
-				break
-			}
-		}
-	}
-
-	return nil
-}
-
-// SetToSgroup of the policy to the related item.
-// Sets o.R.ToSgroup to related.
-// Adds o to related.R.ToPolicies.
-func (o *Policy) SetToSgroup(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Sgroup) error {
-	var err error
-	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "failed to insert into foreign table")
-		}
-	}
-
-	updateQuery := fmt.Sprintf(
-		"UPDATE \"policy\" SET %s WHERE %s",
-		strmangle.SetParamNames("\"", "\"", 0, []string{"to"}),
-		strmangle.WhereClause("\"", "\"", 0, policyPrimaryKeyColumns),
-	)
-	values := []interface{}{related.ID, o.ID}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, updateQuery)
-		fmt.Fprintln(writer, values)
-	}
-	if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	queries.Assign(&o.To, related.ID)
-	if o.R == nil {
-		o.R = &policyR{
-			ToSgroup: related,
-		}
-	} else {
-		o.R.ToSgroup = related
-	}
-
-	if related.R == nil {
-		related.R = &sgroupR{
-			ToPolicies: PolicySlice{o},
-		}
-	} else {
-		related.R.ToPolicies = append(related.R.ToPolicies, o)
-	}
-
-	return nil
-}
-
-// SetFromSgroup of the policy to the related item.
-// Sets o.R.FromSgroup to related.
-// Adds o to related.R.FromPolicies.
-func (o *Policy) SetFromSgroup(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Sgroup) error {
-	var err error
-	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "failed to insert into foreign table")
-		}
-	}
-
-	updateQuery := fmt.Sprintf(
-		"UPDATE \"policy\" SET %s WHERE %s",
-		strmangle.SetParamNames("\"", "\"", 0, []string{"from"}),
-		strmangle.WhereClause("\"", "\"", 0, policyPrimaryKeyColumns),
-	)
-	values := []interface{}{related.ID, o.ID}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, updateQuery)
-		fmt.Fprintln(writer, values)
-	}
-	if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	queries.Assign(&o.From, related.ID)
-	if o.R == nil {
-		o.R = &policyR{
-			FromSgroup: related,
-		}
-	} else {
-		o.R.FromSgroup = related
-	}
-
-	if related.R == nil {
-		related.R = &sgroupR{
-			FromPolicies: PolicySlice{o},
-		}
-	} else {
-		related.R.FromPolicies = append(related.R.FromPolicies, o)
-	}
-
-	return nil
-}
-
 // Policies retrieves all the records using an executor.
 func Policies(mods ...qm.QueryMod) policyQuery {
 	mods = append(mods, qm.From("\"policy\""))
@@ -808,7 +399,7 @@ func Policies(mods ...qm.QueryMod) policyQuery {
 
 // FindPolicy retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindPolicy(ctx context.Context, exec boil.ContextExecutor, iD null.Int64, selectCols ...string) (*Policy, error) {
+func FindPolicy(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Policy, error) {
 	policyObj := &Policy{}
 
 	sel := "*"
@@ -1308,7 +899,7 @@ func (o *PolicySlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // PolicyExists checks if the Policy row exists.
-func PolicyExists(ctx context.Context, exec boil.ContextExecutor, iD null.Int64) (bool, error) {
+func PolicyExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
 	sql := "select exists(select 1 from \"policy\" where \"id\"=? limit 1)"
 

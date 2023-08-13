@@ -13,66 +13,77 @@ import "testing"
 // Separating the tests thusly grants avoidance of Postgres deadlocks.
 func TestParent(t *testing.T) {
 	t.Run("Hosts", testHosts)
+	t.Run("HostSgroups", testHostSgroups)
 	t.Run("Policies", testPolicies)
 	t.Run("Sgroups", testSgroups)
 }
 
 func TestDelete(t *testing.T) {
 	t.Run("Hosts", testHostsDelete)
+	t.Run("HostSgroups", testHostSgroupsDelete)
 	t.Run("Policies", testPoliciesDelete)
 	t.Run("Sgroups", testSgroupsDelete)
 }
 
 func TestQueryDeleteAll(t *testing.T) {
 	t.Run("Hosts", testHostsQueryDeleteAll)
+	t.Run("HostSgroups", testHostSgroupsQueryDeleteAll)
 	t.Run("Policies", testPoliciesQueryDeleteAll)
 	t.Run("Sgroups", testSgroupsQueryDeleteAll)
 }
 
 func TestSliceDeleteAll(t *testing.T) {
 	t.Run("Hosts", testHostsSliceDeleteAll)
+	t.Run("HostSgroups", testHostSgroupsSliceDeleteAll)
 	t.Run("Policies", testPoliciesSliceDeleteAll)
 	t.Run("Sgroups", testSgroupsSliceDeleteAll)
 }
 
 func TestExists(t *testing.T) {
 	t.Run("Hosts", testHostsExists)
+	t.Run("HostSgroups", testHostSgroupsExists)
 	t.Run("Policies", testPoliciesExists)
 	t.Run("Sgroups", testSgroupsExists)
 }
 
 func TestFind(t *testing.T) {
 	t.Run("Hosts", testHostsFind)
+	t.Run("HostSgroups", testHostSgroupsFind)
 	t.Run("Policies", testPoliciesFind)
 	t.Run("Sgroups", testSgroupsFind)
 }
 
 func TestBind(t *testing.T) {
 	t.Run("Hosts", testHostsBind)
+	t.Run("HostSgroups", testHostSgroupsBind)
 	t.Run("Policies", testPoliciesBind)
 	t.Run("Sgroups", testSgroupsBind)
 }
 
 func TestOne(t *testing.T) {
 	t.Run("Hosts", testHostsOne)
+	t.Run("HostSgroups", testHostSgroupsOne)
 	t.Run("Policies", testPoliciesOne)
 	t.Run("Sgroups", testSgroupsOne)
 }
 
 func TestAll(t *testing.T) {
 	t.Run("Hosts", testHostsAll)
+	t.Run("HostSgroups", testHostSgroupsAll)
 	t.Run("Policies", testPoliciesAll)
 	t.Run("Sgroups", testSgroupsAll)
 }
 
 func TestCount(t *testing.T) {
 	t.Run("Hosts", testHostsCount)
+	t.Run("HostSgroups", testHostSgroupsCount)
 	t.Run("Policies", testPoliciesCount)
 	t.Run("Sgroups", testSgroupsCount)
 }
 
 func TestHooks(t *testing.T) {
 	t.Run("Hosts", testHostsHooks)
+	t.Run("HostSgroups", testHostSgroupsHooks)
 	t.Run("Policies", testPoliciesHooks)
 	t.Run("Sgroups", testSgroupsHooks)
 }
@@ -80,6 +91,8 @@ func TestHooks(t *testing.T) {
 func TestInsert(t *testing.T) {
 	t.Run("Hosts", testHostsInsert)
 	t.Run("Hosts", testHostsInsertWhitelist)
+	t.Run("HostSgroups", testHostSgroupsInsert)
+	t.Run("HostSgroups", testHostSgroupsInsertWhitelist)
 	t.Run("Policies", testPoliciesInsert)
 	t.Run("Policies", testPoliciesInsertWhitelist)
 	t.Run("Sgroups", testSgroupsInsert)
@@ -88,10 +101,7 @@ func TestInsert(t *testing.T) {
 
 // TestToOne tests cannot be run in parallel
 // or deadlocks can occur.
-func TestToOne(t *testing.T) {
-	t.Run("PolicyToSgroupUsingToSgroup", testPolicyToOneSgroupUsingToSgroup)
-	t.Run("PolicyToSgroupUsingFromSgroup", testPolicyToOneSgroupUsingFromSgroup)
-}
+func TestToOne(t *testing.T) {}
 
 // TestOneToOne tests cannot be run in parallel
 // or deadlocks can occur.
@@ -99,19 +109,11 @@ func TestOneToOne(t *testing.T) {}
 
 // TestToMany tests cannot be run in parallel
 // or deadlocks can occur.
-func TestToMany(t *testing.T) {
-	t.Run("HostToSgroups", testHostToManySgroups)
-	t.Run("SgroupToHosts", testSgroupToManyHosts)
-	t.Run("SgroupToToPolicies", testSgroupToManyToPolicies)
-	t.Run("SgroupToFromPolicies", testSgroupToManyFromPolicies)
-}
+func TestToMany(t *testing.T) {}
 
 // TestToOneSet tests cannot be run in parallel
 // or deadlocks can occur.
-func TestToOneSet(t *testing.T) {
-	t.Run("PolicyToSgroupUsingToPolicies", testPolicyToOneSetOpSgroupUsingToSgroup)
-	t.Run("PolicyToSgroupUsingFromPolicies", testPolicyToOneSetOpSgroupUsingFromSgroup)
-}
+func TestToOneSet(t *testing.T) {}
 
 // TestToOneRemove tests cannot be run in parallel
 // or deadlocks can occur.
@@ -127,53 +129,47 @@ func TestOneToOneRemove(t *testing.T) {}
 
 // TestToManyAdd tests cannot be run in parallel
 // or deadlocks can occur.
-func TestToManyAdd(t *testing.T) {
-	t.Run("HostToSgroups", testHostToManyAddOpSgroups)
-	t.Run("SgroupToHosts", testSgroupToManyAddOpHosts)
-	t.Run("SgroupToToPolicies", testSgroupToManyAddOpToPolicies)
-	t.Run("SgroupToFromPolicies", testSgroupToManyAddOpFromPolicies)
-}
+func TestToManyAdd(t *testing.T) {}
 
 // TestToManySet tests cannot be run in parallel
 // or deadlocks can occur.
-func TestToManySet(t *testing.T) {
-	t.Run("HostToSgroups", testHostToManySetOpSgroups)
-	t.Run("SgroupToHosts", testSgroupToManySetOpHosts)
-}
+func TestToManySet(t *testing.T) {}
 
 // TestToManyRemove tests cannot be run in parallel
 // or deadlocks can occur.
-func TestToManyRemove(t *testing.T) {
-	t.Run("HostToSgroups", testHostToManyRemoveOpSgroups)
-	t.Run("SgroupToHosts", testSgroupToManyRemoveOpHosts)
-}
+func TestToManyRemove(t *testing.T) {}
 
 func TestReload(t *testing.T) {
 	t.Run("Hosts", testHostsReload)
+	t.Run("HostSgroups", testHostSgroupsReload)
 	t.Run("Policies", testPoliciesReload)
 	t.Run("Sgroups", testSgroupsReload)
 }
 
 func TestReloadAll(t *testing.T) {
 	t.Run("Hosts", testHostsReloadAll)
+	t.Run("HostSgroups", testHostSgroupsReloadAll)
 	t.Run("Policies", testPoliciesReloadAll)
 	t.Run("Sgroups", testSgroupsReloadAll)
 }
 
 func TestSelect(t *testing.T) {
 	t.Run("Hosts", testHostsSelect)
+	t.Run("HostSgroups", testHostSgroupsSelect)
 	t.Run("Policies", testPoliciesSelect)
 	t.Run("Sgroups", testSgroupsSelect)
 }
 
 func TestUpdate(t *testing.T) {
 	t.Run("Hosts", testHostsUpdate)
+	t.Run("HostSgroups", testHostSgroupsUpdate)
 	t.Run("Policies", testPoliciesUpdate)
 	t.Run("Sgroups", testSgroupsUpdate)
 }
 
 func TestSliceUpdateAll(t *testing.T) {
 	t.Run("Hosts", testHostsSliceUpdateAll)
+	t.Run("HostSgroups", testHostSgroupsSliceUpdateAll)
 	t.Run("Policies", testPoliciesSliceUpdateAll)
 	t.Run("Sgroups", testSgroupsSliceUpdateAll)
 }

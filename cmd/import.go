@@ -22,14 +22,22 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"bytes"
+	"context"
+	"database/sql"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"os"
 	"regexp"
-	"strings"
 
+	// import sqlite3.
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+
+	"github.com/aanoaa/sg-viz/repo"
 )
 
 // importCmd represents the import command.
@@ -96,11 +104,17 @@ For example:
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if !(isHost || isGroup || isPolicy) {
-			fmt.Fprintln(cmd.ErrOrStderr(), "at least one of host|group|policy is required")
-			os.Exit(1)
+			return errors.New("at least one of host|group|policy is required")
 		}
 
+		boil.DebugMode = true
+
 		var err error
+		db, err = sql.Open("sqlite3", "./sg.db")
+		if err != nil {
+			return errors.Wrap(err, "db open fail")
+		}
+
 		if isHost {
 			err = importHost(cmd, args)
 		} else if isGroup {
@@ -116,6 +130,8 @@ var (
 	isHost   bool
 	isGroup  bool
 	isPolicy bool
+
+	db *sql.DB
 )
 
 func init() {
@@ -136,18 +152,71 @@ func importHost(cmd *cobra.Command, _ []string) error {
 	}
 
 	// 첫번째 줄이 header 인지 판단.
-	content := string(b)
-	content = strings.Trim(content, "\n")
-	lines := strings.Split(content, "\n")
-	re := regexp.MustCompile(`hostname,ipaddr(,desc)?`)
-	if re.MatchString(lines[0]) {
-		lines = lines[1:]
+	b = bytes.Trim(b, "\n")
+	re := regexp.MustCompile(`hostname,ipaddr(,desc)?\n`)
+	header := false
+	if re.Match(b) {
+		header = true
 	}
-	fmt.Println(lines)
+
+	r := csv.NewReader(bytes.NewReader(b))
+	if header {
+		_, _ = r.Read()
+	}
+
+	records, err := r.ReadAll()
+	if err != nil {
+		return errors.Wrap(err, "csv read fail")
+	}
+
+	ctx := context.Background()
+	for _, record := range records {
+		hr := repo.NewHostRepo(db)
+		if err := hr.Upsert(ctx, record); err != nil {
+			return errors.Wrap(err, "upsert fail")
+		}
+		fmt.Fprintln(stdout, len(record), record)
+	}
+
 	return nil
 }
 
-func importGroup(_ *cobra.Command, _ []string) error {
+func importGroup(cmd *cobra.Command, _ []string) error {
+	stdout := cmd.OutOrStdout()
+	fmt.Fprintln(stdout, "<ctrl+d> to submit, <ctrl+c> to abort.")
+
+	b, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		return errors.Wrap(err, "read fail")
+	}
+
+	// 첫번째 줄이 header 인지 판단.
+	b = bytes.Trim(b, "\n")
+	re := regexp.MustCompile(`group,hostname\n`)
+	header := false
+	if re.Match(b) {
+		header = true
+	}
+
+	r := csv.NewReader(bytes.NewReader(b))
+	if header {
+		_, _ = r.Read()
+	}
+
+	records, err := r.ReadAll()
+	if err != nil {
+		return errors.Wrap(err, "csv read fail")
+	}
+
+	ctx := context.Background()
+	for _, record := range records {
+		gr := repo.NewGroupRepo(db)
+		if err := gr.Upsert(ctx, record); err != nil {
+			return errors.Wrap(err, "upsert fail")
+		}
+		fmt.Fprintln(stdout, len(record), record)
+	}
+
 	return nil
 }
 

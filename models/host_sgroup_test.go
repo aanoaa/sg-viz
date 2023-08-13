@@ -21,24 +21,24 @@ var (
 	_ = queries.Equal
 )
 
-func testSgroups(t *testing.T) {
+func testHostSgroups(t *testing.T) {
 	t.Parallel()
 
-	query := Sgroups()
+	query := HostSgroups()
 
 	if query.Query == nil {
 		t.Error("expected a query, got nothing")
 	}
 }
 
-func testSgroupsDelete(t *testing.T) {
+func testHostSgroupsDelete(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -54,7 +54,7 @@ func testSgroupsDelete(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -64,14 +64,14 @@ func testSgroupsDelete(t *testing.T) {
 	}
 }
 
-func testSgroupsQueryDeleteAll(t *testing.T) {
+func testHostSgroupsQueryDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -81,13 +81,13 @@ func testSgroupsQueryDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	if rowsAff, err := Sgroups().DeleteAll(ctx, tx); err != nil {
+	if rowsAff, err := HostSgroups().DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,14 +97,14 @@ func testSgroupsQueryDeleteAll(t *testing.T) {
 	}
 }
 
-func testSgroupsSliceDeleteAll(t *testing.T) {
+func testHostSgroupsSliceDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -114,7 +114,7 @@ func testSgroupsSliceDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := SgroupSlice{o}
+	slice := HostSgroupSlice{o}
 
 	if rowsAff, err := slice.DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
@@ -122,7 +122,7 @@ func testSgroupsSliceDeleteAll(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -132,14 +132,14 @@ func testSgroupsSliceDeleteAll(t *testing.T) {
 	}
 }
 
-func testSgroupsExists(t *testing.T) {
+func testHostSgroupsExists(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -149,23 +149,23 @@ func testSgroupsExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := SgroupExists(ctx, tx, o.ID)
+	e, err := HostSgroupExists(ctx, tx, o.HostID, o.SgroupID)
 	if err != nil {
-		t.Errorf("Unable to check if Sgroup exists: %s", err)
+		t.Errorf("Unable to check if HostSgroup exists: %s", err)
 	}
 	if !e {
-		t.Errorf("Expected SgroupExists to return true, but got false.")
+		t.Errorf("Expected HostSgroupExists to return true, but got false.")
 	}
 }
 
-func testSgroupsFind(t *testing.T) {
+func testHostSgroupsFind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -175,24 +175,24 @@ func testSgroupsFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	sgroupFound, err := FindSgroup(ctx, tx, o.ID)
+	hostSgroupFound, err := FindHostSgroup(ctx, tx, o.HostID, o.SgroupID)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if sgroupFound == nil {
+	if hostSgroupFound == nil {
 		t.Error("want a record, got nil")
 	}
 }
 
-func testSgroupsBind(t *testing.T) {
+func testHostSgroupsBind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -202,19 +202,19 @@ func testSgroupsBind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = Sgroups().Bind(ctx, tx, o); err != nil {
+	if err = HostSgroups().Bind(ctx, tx, o); err != nil {
 		t.Error(err)
 	}
 }
 
-func testSgroupsOne(t *testing.T) {
+func testHostSgroupsOne(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -224,38 +224,38 @@ func testSgroupsOne(t *testing.T) {
 		t.Error(err)
 	}
 
-	if x, err := Sgroups().One(ctx, tx); err != nil {
+	if x, err := HostSgroups().One(ctx, tx); err != nil {
 		t.Error(err)
 	} else if x == nil {
 		t.Error("expected to get a non nil record")
 	}
 }
 
-func testSgroupsAll(t *testing.T) {
+func testHostSgroupsAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	sgroupOne := &Sgroup{}
-	sgroupTwo := &Sgroup{}
-	if err = randomize.Struct(seed, sgroupOne, sgroupDBTypes, false, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	hostSgroupOne := &HostSgroup{}
+	hostSgroupTwo := &HostSgroup{}
+	if err = randomize.Struct(seed, hostSgroupOne, hostSgroupDBTypes, false, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
-	if err = randomize.Struct(seed, sgroupTwo, sgroupDBTypes, false, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	if err = randomize.Struct(seed, hostSgroupTwo, hostSgroupDBTypes, false, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = sgroupOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = hostSgroupOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = sgroupTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = hostSgroupTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	slice, err := Sgroups().All(ctx, tx)
+	slice, err := HostSgroups().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -265,31 +265,31 @@ func testSgroupsAll(t *testing.T) {
 	}
 }
 
-func testSgroupsCount(t *testing.T) {
+func testHostSgroupsCount(t *testing.T) {
 	t.Parallel()
 
 	var err error
 	seed := randomize.NewSeed()
-	sgroupOne := &Sgroup{}
-	sgroupTwo := &Sgroup{}
-	if err = randomize.Struct(seed, sgroupOne, sgroupDBTypes, false, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	hostSgroupOne := &HostSgroup{}
+	hostSgroupTwo := &HostSgroup{}
+	if err = randomize.Struct(seed, hostSgroupOne, hostSgroupDBTypes, false, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
-	if err = randomize.Struct(seed, sgroupTwo, sgroupDBTypes, false, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	if err = randomize.Struct(seed, hostSgroupTwo, hostSgroupDBTypes, false, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = sgroupOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = hostSgroupOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = sgroupTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = hostSgroupTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -299,155 +299,155 @@ func testSgroupsCount(t *testing.T) {
 	}
 }
 
-func sgroupBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func sgroupAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *Sgroup) error {
-	*o = Sgroup{}
+func hostSgroupAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *HostSgroup) error {
+	*o = HostSgroup{}
 	return nil
 }
 
-func testSgroupsHooks(t *testing.T) {
+func testHostSgroupsHooks(t *testing.T) {
 	t.Parallel()
 
 	var err error
 
 	ctx := context.Background()
-	empty := &Sgroup{}
-	o := &Sgroup{}
+	empty := &HostSgroup{}
+	o := &HostSgroup{}
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, o, sgroupDBTypes, false); err != nil {
-		t.Errorf("Unable to randomize Sgroup object: %s", err)
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, false); err != nil {
+		t.Errorf("Unable to randomize HostSgroup object: %s", err)
 	}
 
-	AddSgroupHook(boil.BeforeInsertHook, sgroupBeforeInsertHook)
+	AddHostSgroupHook(boil.BeforeInsertHook, hostSgroupBeforeInsertHook)
 	if err = o.doBeforeInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeInsertHook function to empty object, but got: %#v", o)
 	}
-	sgroupBeforeInsertHooks = []SgroupHook{}
+	hostSgroupBeforeInsertHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.AfterInsertHook, sgroupAfterInsertHook)
+	AddHostSgroupHook(boil.AfterInsertHook, hostSgroupAfterInsertHook)
 	if err = o.doAfterInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterInsertHook function to empty object, but got: %#v", o)
 	}
-	sgroupAfterInsertHooks = []SgroupHook{}
+	hostSgroupAfterInsertHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.AfterSelectHook, sgroupAfterSelectHook)
+	AddHostSgroupHook(boil.AfterSelectHook, hostSgroupAfterSelectHook)
 	if err = o.doAfterSelectHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterSelectHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterSelectHook function to empty object, but got: %#v", o)
 	}
-	sgroupAfterSelectHooks = []SgroupHook{}
+	hostSgroupAfterSelectHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.BeforeUpdateHook, sgroupBeforeUpdateHook)
+	AddHostSgroupHook(boil.BeforeUpdateHook, hostSgroupBeforeUpdateHook)
 	if err = o.doBeforeUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpdateHook function to empty object, but got: %#v", o)
 	}
-	sgroupBeforeUpdateHooks = []SgroupHook{}
+	hostSgroupBeforeUpdateHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.AfterUpdateHook, sgroupAfterUpdateHook)
+	AddHostSgroupHook(boil.AfterUpdateHook, hostSgroupAfterUpdateHook)
 	if err = o.doAfterUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpdateHook function to empty object, but got: %#v", o)
 	}
-	sgroupAfterUpdateHooks = []SgroupHook{}
+	hostSgroupAfterUpdateHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.BeforeDeleteHook, sgroupBeforeDeleteHook)
+	AddHostSgroupHook(boil.BeforeDeleteHook, hostSgroupBeforeDeleteHook)
 	if err = o.doBeforeDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeDeleteHook function to empty object, but got: %#v", o)
 	}
-	sgroupBeforeDeleteHooks = []SgroupHook{}
+	hostSgroupBeforeDeleteHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.AfterDeleteHook, sgroupAfterDeleteHook)
+	AddHostSgroupHook(boil.AfterDeleteHook, hostSgroupAfterDeleteHook)
 	if err = o.doAfterDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterDeleteHook function to empty object, but got: %#v", o)
 	}
-	sgroupAfterDeleteHooks = []SgroupHook{}
+	hostSgroupAfterDeleteHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.BeforeUpsertHook, sgroupBeforeUpsertHook)
+	AddHostSgroupHook(boil.BeforeUpsertHook, hostSgroupBeforeUpsertHook)
 	if err = o.doBeforeUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpsertHook function to empty object, but got: %#v", o)
 	}
-	sgroupBeforeUpsertHooks = []SgroupHook{}
+	hostSgroupBeforeUpsertHooks = []HostSgroupHook{}
 
-	AddSgroupHook(boil.AfterUpsertHook, sgroupAfterUpsertHook)
+	AddHostSgroupHook(boil.AfterUpsertHook, hostSgroupAfterUpsertHook)
 	if err = o.doAfterUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpsertHook function to empty object, but got: %#v", o)
 	}
-	sgroupAfterUpsertHooks = []SgroupHook{}
+	hostSgroupAfterUpsertHooks = []HostSgroupHook{}
 }
 
-func testSgroupsInsert(t *testing.T) {
+func testHostSgroupsInsert(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -457,7 +457,7 @@ func testSgroupsInsert(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -467,24 +467,24 @@ func testSgroupsInsert(t *testing.T) {
 	}
 }
 
-func testSgroupsInsertWhitelist(t *testing.T) {
+func testHostSgroupsInsertWhitelist(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = o.Insert(ctx, tx, boil.Whitelist(sgroupColumnsWithoutDefault...)); err != nil {
+	if err = o.Insert(ctx, tx, boil.Whitelist(hostSgroupColumnsWithoutDefault...)); err != nil {
 		t.Error(err)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -494,14 +494,14 @@ func testSgroupsInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testSgroupsReload(t *testing.T) {
+func testHostSgroupsReload(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -516,14 +516,14 @@ func testSgroupsReload(t *testing.T) {
 	}
 }
 
-func testSgroupsReloadAll(t *testing.T) {
+func testHostSgroupsReloadAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -533,21 +533,21 @@ func testSgroupsReloadAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := SgroupSlice{o}
+	slice := HostSgroupSlice{o}
 
 	if err = slice.ReloadAll(ctx, tx); err != nil {
 		t.Error(err)
 	}
 }
 
-func testSgroupsSelect(t *testing.T) {
+func testHostSgroupsSelect(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -557,7 +557,7 @@ func testSgroupsSelect(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice, err := Sgroups().All(ctx, tx)
+	slice, err := HostSgroups().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -568,25 +568,25 @@ func testSgroupsSelect(t *testing.T) {
 }
 
 var (
-	sgroupDBTypes = map[string]string{`ID`: `INTEGER`, `Name`: `TEXT`, `Desc`: `TEXT`}
-	_             = bytes.MinRead
+	hostSgroupDBTypes = map[string]string{`HostID`: `INTEGER`, `SgroupID`: `INTEGER`}
+	_                 = bytes.MinRead
 )
 
-func testSgroupsUpdate(t *testing.T) {
+func testHostSgroupsUpdate(t *testing.T) {
 	t.Parallel()
 
-	if 0 == len(sgroupPrimaryKeyColumns) {
+	if 0 == len(hostSgroupPrimaryKeyColumns) {
 		t.Skip("Skipping table with no primary key columns")
 	}
-	if len(sgroupAllColumns) == len(sgroupPrimaryKeyColumns) {
+	if len(hostSgroupAllColumns) == len(hostSgroupPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -596,7 +596,7 @@ func testSgroupsUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -605,8 +605,8 @@ func testSgroupsUpdate(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	if rowsAff, err := o.Update(ctx, tx, boil.Infer()); err != nil {
@@ -616,18 +616,18 @@ func testSgroupsUpdate(t *testing.T) {
 	}
 }
 
-func testSgroupsSliceUpdateAll(t *testing.T) {
+func testHostSgroupsSliceUpdateAll(t *testing.T) {
 	t.Parallel()
 
-	if len(sgroupAllColumns) == len(sgroupPrimaryKeyColumns) {
+	if len(hostSgroupAllColumns) == len(hostSgroupPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &Sgroup{}
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := &HostSgroup{}
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -637,7 +637,7 @@ func testSgroupsSliceUpdateAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -646,20 +646,19 @@ func testSgroupsSliceUpdateAll(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, sgroupDBTypes, true, sgroupPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	if err = randomize.Struct(seed, o, hostSgroupDBTypes, true, hostSgroupPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	// Remove Primary keys and unique columns from what we plan to update
 	var fields []string
-	if strmangle.StringSliceMatch(sgroupAllColumns, sgroupPrimaryKeyColumns) {
-		fields = sgroupAllColumns
+	if strmangle.StringSliceMatch(hostSgroupAllColumns, hostSgroupPrimaryKeyColumns) {
+		fields = hostSgroupAllColumns
 	} else {
 		fields = strmangle.SetComplement(
-			sgroupAllColumns,
-			sgroupPrimaryKeyColumns,
+			hostSgroupAllColumns,
+			hostSgroupPrimaryKeyColumns,
 		)
-		fields = strmangle.SetComplement(fields, sgroupGeneratedColumns)
 	}
 
 	value := reflect.Indirect(reflect.ValueOf(o))
@@ -676,7 +675,7 @@ func testSgroupsSliceUpdateAll(t *testing.T) {
 		}
 	}
 
-	slice := SgroupSlice{o}
+	slice := HostSgroupSlice{o}
 	if rowsAff, err := slice.UpdateAll(ctx, tx, updateMap); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
@@ -684,28 +683,28 @@ func testSgroupsSliceUpdateAll(t *testing.T) {
 	}
 }
 
-func testSgroupsUpsert(t *testing.T) {
+func testHostSgroupsUpsert(t *testing.T) {
 	t.Parallel()
-	if len(sgroupAllColumns) == len(sgroupPrimaryKeyColumns) {
+	if len(hostSgroupAllColumns) == len(hostSgroupPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
 	// Attempt the INSERT side of an UPSERT
-	o := Sgroup{}
-	if err = randomize.Struct(seed, &o, sgroupDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	o := HostSgroup{}
+	if err = randomize.Struct(seed, &o, hostSgroupDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 	if err = o.Upsert(ctx, tx, false, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Sgroup: %s", err)
+		t.Errorf("Unable to upsert HostSgroup: %s", err)
 	}
 
-	count, err := Sgroups().Count(ctx, tx)
+	count, err := HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -714,15 +713,15 @@ func testSgroupsUpsert(t *testing.T) {
 	}
 
 	// Attempt the UPDATE side of an UPSERT
-	if err = randomize.Struct(seed, &o, sgroupDBTypes, false, sgroupPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize Sgroup struct: %s", err)
+	if err = randomize.Struct(seed, &o, hostSgroupDBTypes, false, hostSgroupPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize HostSgroup struct: %s", err)
 	}
 
 	if err = o.Upsert(ctx, tx, true, nil, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert Sgroup: %s", err)
+		t.Errorf("Unable to upsert HostSgroup: %s", err)
 	}
 
-	count, err = Sgroups().Count(ctx, tx)
+	count, err = HostSgroups().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}

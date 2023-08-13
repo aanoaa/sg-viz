@@ -5,7 +5,7 @@ INSERT INTO `host` (`hostname`, `ipaddr`) VALUES
 
 INSERT INTO `sgroup` (`name`) VALUES
   ("foo"),
-  ("bar");
+  ("bar.example.com");
 
 INSERT INTO `host_sgroup` (`host_id`, `sgroup_id`) VALUES
   (1, 1),
