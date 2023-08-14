@@ -17,6 +17,11 @@ func NewGroup(db *sql.DB) *Group {
 	return &Group{db}
 }
 
+func (r *Group) FindByName(ctx context.Context, name string) (*models.Sgroup, error) {
+	group, err := models.Sgroups(models.SgroupWhere.Name.EQ(name)).One(ctx, r.db)
+	return group, errors.Wrap(err, "find fail")
+}
+
 func (r *Group) Upsert(ctx context.Context, record []string) error {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {

@@ -22,13 +22,9 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
-	"encoding/csv"
 	"fmt"
-	"io"
-	"os"
 	"regexp"
 
 	// import sqlite3.
@@ -37,6 +33,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 
+	"github.com/aanoaa/sg-viz/internal/reader"
 	"github.com/aanoaa/sg-viz/repo"
 )
 
@@ -146,27 +143,10 @@ func importHost(cmd *cobra.Command, _ []string) error {
 	stdout := cmd.OutOrStdout()
 	fmt.Fprintln(stdout, "<ctrl+d> to submit, <ctrl+c> to abort.")
 
-	b, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		return errors.Wrap(err, "read fail")
-	}
-
-	// 첫번째 줄이 header 인지 판단.
-	b = bytes.Trim(b, "\n")
 	re := regexp.MustCompile(`hostname,ipaddr(,desc)?\n`)
-	header := false
-	if re.Match(b) {
-		header = true
-	}
-
-	r := csv.NewReader(bytes.NewReader(b))
-	if header {
-		_, _ = r.Read()
-	}
-
-	records, err := r.ReadAll()
+	records, err := reader.StdinToCsv(re)
 	if err != nil {
-		return errors.Wrap(err, "csv read fail")
+		return errors.Wrap(err, "stdin to csv fail")
 	}
 
 	ctx := context.Background()
@@ -185,25 +165,8 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 	stdout := cmd.OutOrStdout()
 	fmt.Fprintln(stdout, "<ctrl+d> to submit, <ctrl+c> to abort.")
 
-	b, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		return errors.Wrap(err, "read fail")
-	}
-
-	// 첫번째 줄이 header 인지 판단.
-	b = bytes.Trim(b, "\n")
 	re := regexp.MustCompile(`group,hostname\n`)
-	header := false
-	if re.Match(b) {
-		header = true
-	}
-
-	r := csv.NewReader(bytes.NewReader(b))
-	if header {
-		_, _ = r.Read()
-	}
-
-	records, err := r.ReadAll()
+	records, err := reader.StdinToCsv(re)
 	if err != nil {
 		return errors.Wrap(err, "csv read fail")
 	}
@@ -220,6 +183,24 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func importPolicy(_ *cobra.Command, _ []string) error {
+func importPolicy(cmd *cobra.Command, _ []string) error {
+	stdout := cmd.OutOrStdout()
+	fmt.Fprintln(stdout, "<ctrl+d> to submit, <ctrl+c> to abort.")
+
+	re := regexp.MustCompile(`src,dst,port\n`)
+	records, err := reader.StdinToCsv(re)
+	if err != nil {
+		return errors.Wrap(err, "csv read fail")
+	}
+
+	ctx := context.Background()
+	for _, record := range records {
+		pr := repo.NewPolicyRepo(db)
+		if err := pr.Upsert(ctx, record); err != nil {
+			return errors.Wrap(err, "upsert fail")
+		}
+		fmt.Fprintln(stdout, len(record), record)
+	}
+
 	return nil
 }

@@ -18,10 +18,10 @@ CREATE TABLE `host_sgroup` (
 );
 
 CREATE TABLE `policy` (
-  `id`       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  `from`     INTEGER NOT NULL,
-  `to`       INTEGER NOT NULL,
+  `src`     INTEGER NOT NULL,
+  `dst`       INTEGER NOT NULL,
   `port`     INTEGER NOT NULL,
   `protocol` TEXT NOT NULL DEFAULT 'tcp',
-  `desc`     TEXT NOT NULL DEFAULT ''
+  `desc`     TEXT NOT NULL DEFAULT '',
+  CONSTRAINT policy1 PRIMARY KEY (`src`, `dst`, `port`, `protocol`)
 );
