@@ -134,8 +134,8 @@ type hostL struct{}
 
 var (
 	hostAllColumns            = []string{"id", "hostname", "ipaddr", "desc"}
-	hostColumnsWithoutDefault = []string{"hostname", "ipaddr"}
-	hostColumnsWithDefault    = []string{"id", "desc"}
+	hostColumnsWithoutDefault = []string{"hostname"}
+	hostColumnsWithDefault    = []string{"id", "ipaddr", "desc"}
 	hostPrimaryKeyColumns     = []string{"id"}
 	hostGeneratedColumns      = []string{"id"}
 )

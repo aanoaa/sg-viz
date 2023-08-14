@@ -149,7 +149,7 @@ func testPoliciesExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := PolicyExists(ctx, tx, o.ID)
+	e, err := PolicyExists(ctx, tx, o.SRC, o.DST, o.Port, o.Protocol)
 	if err != nil {
 		t.Errorf("Unable to check if Policy exists: %s", err)
 	}
@@ -175,7 +175,7 @@ func testPoliciesFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	policyFound, err := FindPolicy(ctx, tx, o.ID)
+	policyFound, err := FindPolicy(ctx, tx, o.SRC, o.DST, o.Port, o.Protocol)
 	if err != nil {
 		t.Error(err)
 	}
@@ -568,7 +568,7 @@ func testPoliciesSelect(t *testing.T) {
 }
 
 var (
-	policyDBTypes = map[string]string{`ID`: `INTEGER`, `From`: `INTEGER`, `To`: `INTEGER`, `Port`: `INTEGER`, `Protocol`: `TEXT`, `Desc`: `TEXT`}
+	policyDBTypes = map[string]string{`SRC`: `INTEGER`, `DST`: `INTEGER`, `Port`: `INTEGER`, `Protocol`: `TEXT`, `Desc`: `TEXT`}
 	_             = bytes.MinRead
 )
 
@@ -659,7 +659,6 @@ func testPoliciesSliceUpdateAll(t *testing.T) {
 			policyAllColumns,
 			policyPrimaryKeyColumns,
 		)
-		fields = strmangle.SetComplement(fields, policyGeneratedColumns)
 	}
 
 	value := reflect.Indirect(reflect.ValueOf(o))

@@ -1,7 +1,7 @@
 CREATE TABLE `host` (
   `id`       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   `hostname` TEXT NOT NULL UNIQUE,
-  `ipaddr`   TEXT NOT NULL,
+  `ipaddr`   TEXT NOT NULL DEFAULT '',
   `desc`     TEXT NOT NULL DEFAULT ''
 );
 
@@ -18,8 +18,8 @@ CREATE TABLE `host_sgroup` (
 );
 
 CREATE TABLE `policy` (
-  `src`     INTEGER NOT NULL,
-  `dst`       INTEGER NOT NULL,
+  `src`      INTEGER NOT NULL,
+  `dst`      INTEGER NOT NULL,
   `port`     INTEGER NOT NULL,
   `protocol` TEXT NOT NULL DEFAULT 'tcp',
   `desc`     TEXT NOT NULL DEFAULT '',

@@ -19,16 +19,16 @@ func NewPolicy(db *sql.DB) *Policy {
 }
 
 func (r *Policy) Upsert(ctx context.Context, record []string) error {
+	port, err := strconv.Atoi(record[2])
+	if err != nil {
+		return errors.Wrap(err, "wrong port")
+	}
+
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return errors.Wrap(err, "begin tx fail")
 	}
 	defer func() { _ = tx.Rollback() }()
-
-	port, err := strconv.Atoi(record[2])
-	if err != nil {
-		return errors.Wrap(err, "wrong port")
-	}
 
 	gr := NewGroup(r.db)
 	src, err := gr.FindByName(ctx, record[0])
@@ -42,13 +42,13 @@ func (r *Policy) Upsert(ctx context.Context, record []string) error {
 	}
 
 	policy := &models.Policy{
-		From: src.ID,
-		To:   dst.ID,
+		SRC:  src.ID,
+		DST:  dst.ID,
 		Port: int64(port),
 	}
 
-	if err := policy.Upsert(ctx, r.db, true, []string{"id"},
-		boil.Whitelist("from", "to", "port", "protocol", "desc"), boil.Infer()); err != nil {
+	if err := policy.Upsert(ctx, r.db, true, []string{"src", "dst", "port", "protocol"},
+		boil.Whitelist("desc"), boil.Infer()); err != nil {
 		return errors.Wrap(err, "upsert fail")
 	}
 

@@ -12,5 +12,5 @@ INSERT INTO `host_sgroup` (`host_id`, `sgroup_id`) VALUES
   (2, 1),
   (3, 2);
 
-INSERT INTO `policy` (`from`, `to`, `port`) VALUES
+INSERT INTO `policy` (`src`, `dst`, `port`) VALUES
   (1, 2, 8080);

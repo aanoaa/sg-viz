@@ -23,9 +23,8 @@ import (
 
 // Policy is an object representing the database table.
 type Policy struct {
-	ID       int64  `boil:"id" json:"id" toml:"id" yaml:"id"`
-	From     int64  `boil:"from" json:"from" toml:"from" yaml:"from"`
-	To       int64  `boil:"to" json:"to" toml:"to" yaml:"to"`
+	SRC      int64  `boil:"src" json:"src" toml:"src" yaml:"src"`
+	DST      int64  `boil:"dst" json:"dst" toml:"dst" yaml:"dst"`
 	Port     int64  `boil:"port" json:"port" toml:"port" yaml:"port"`
 	Protocol string `boil:"protocol" json:"protocol" toml:"protocol" yaml:"protocol"`
 	Desc     string `boil:"desc" json:"desc" toml:"desc" yaml:"desc"`
@@ -35,32 +34,28 @@ type Policy struct {
 }
 
 var PolicyColumns = struct {
-	ID       string
-	From     string
-	To       string
+	SRC      string
+	DST      string
 	Port     string
 	Protocol string
 	Desc     string
 }{
-	ID:       "id",
-	From:     "from",
-	To:       "to",
+	SRC:      "src",
+	DST:      "dst",
 	Port:     "port",
 	Protocol: "protocol",
 	Desc:     "desc",
 }
 
 var PolicyTableColumns = struct {
-	ID       string
-	From     string
-	To       string
+	SRC      string
+	DST      string
 	Port     string
 	Protocol string
 	Desc     string
 }{
-	ID:       "policy.id",
-	From:     "policy.from",
-	To:       "policy.to",
+	SRC:      "policy.src",
+	DST:      "policy.dst",
 	Port:     "policy.port",
 	Protocol: "policy.protocol",
 	Desc:     "policy.desc",
@@ -69,16 +64,14 @@ var PolicyTableColumns = struct {
 // Generated where
 
 var PolicyWhere = struct {
-	ID       whereHelperint64
-	From     whereHelperint64
-	To       whereHelperint64
+	SRC      whereHelperint64
+	DST      whereHelperint64
 	Port     whereHelperint64
 	Protocol whereHelperstring
 	Desc     whereHelperstring
 }{
-	ID:       whereHelperint64{field: "\"policy\".\"id\""},
-	From:     whereHelperint64{field: "\"policy\".\"from\""},
-	To:       whereHelperint64{field: "\"policy\".\"to\""},
+	SRC:      whereHelperint64{field: "\"policy\".\"src\""},
+	DST:      whereHelperint64{field: "\"policy\".\"dst\""},
 	Port:     whereHelperint64{field: "\"policy\".\"port\""},
 	Protocol: whereHelperstring{field: "\"policy\".\"protocol\""},
 	Desc:     whereHelperstring{field: "\"policy\".\"desc\""},
@@ -101,11 +94,11 @@ func (*policyR) NewStruct() *policyR {
 type policyL struct{}
 
 var (
-	policyAllColumns            = []string{"id", "from", "to", "port", "protocol", "desc"}
-	policyColumnsWithoutDefault = []string{"from", "to", "port"}
-	policyColumnsWithDefault    = []string{"id", "protocol", "desc"}
-	policyPrimaryKeyColumns     = []string{"id"}
-	policyGeneratedColumns      = []string{"id"}
+	policyAllColumns            = []string{"src", "dst", "port", "protocol", "desc"}
+	policyColumnsWithoutDefault = []string{"src", "dst", "port"}
+	policyColumnsWithDefault    = []string{"protocol", "desc"}
+	policyPrimaryKeyColumns     = []string{"src", "dst", "port", "protocol"}
+	policyGeneratedColumns      = []string{}
 )
 
 type (
@@ -399,7 +392,7 @@ func Policies(mods ...qm.QueryMod) policyQuery {
 
 // FindPolicy retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindPolicy(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*Policy, error) {
+func FindPolicy(ctx context.Context, exec boil.ContextExecutor, sRC int64, dST int64, port int64, protocol string, selectCols ...string) (*Policy, error) {
 	policyObj := &Policy{}
 
 	sel := "*"
@@ -407,10 +400,10 @@ func FindPolicy(ctx context.Context, exec boil.ContextExecutor, iD int64, select
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from \"policy\" where \"id\"=?", sel,
+		"select %s from \"policy\" where \"src\"=? AND \"dst\"=? AND \"port\"=? AND \"protocol\"=?", sel,
 	)
 
-	q := queries.Raw(query, iD)
+	q := queries.Raw(query, sRC, dST, port, protocol)
 
 	err := q.Bind(ctx, exec, policyObj)
 	if err != nil {
@@ -454,7 +447,6 @@ func (o *Policy) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 			policyColumnsWithoutDefault,
 			nzDefaults,
 		)
-		wl = strmangle.SetComplement(wl, policyGeneratedColumns)
 
 		cache.valueMapping, err = queries.BindMapping(policyType, policyMapping, wl)
 		if err != nil {
@@ -525,7 +517,6 @@ func (o *Policy) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 			policyAllColumns,
 			policyPrimaryKeyColumns,
 		)
-		wl = strmangle.SetComplement(wl, policyGeneratedColumns)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
@@ -763,7 +754,7 @@ func (o *Policy) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, 
 	}
 
 	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), policyPrimaryKeyMapping)
-	sql := "DELETE FROM \"policy\" WHERE \"id\"=?"
+	sql := "DELETE FROM \"policy\" WHERE \"src\"=? AND \"dst\"=? AND \"port\"=? AND \"protocol\"=?"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -860,7 +851,7 @@ func (o PolicySlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 // Reload refetches the object from the database
 // using the primary keys with an executor.
 func (o *Policy) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindPolicy(ctx, exec, o.ID)
+	ret, err := FindPolicy(ctx, exec, o.SRC, o.DST, o.Port, o.Protocol)
 	if err != nil {
 		return err
 	}
@@ -899,16 +890,16 @@ func (o *PolicySlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // PolicyExists checks if the Policy row exists.
-func PolicyExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
+func PolicyExists(ctx context.Context, exec boil.ContextExecutor, sRC int64, dST int64, port int64, protocol string) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from \"policy\" where \"id\"=? limit 1)"
+	sql := "select exists(select 1 from \"policy\" where \"src\"=? AND \"dst\"=? AND \"port\"=? AND \"protocol\"=? limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
 		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
+		fmt.Fprintln(writer, sRC, dST, port, protocol)
 	}
-	row := exec.QueryRowContext(ctx, sql, iD)
+	row := exec.QueryRowContext(ctx, sql, sRC, dST, port, protocol)
 
 	err := row.Scan(&exists)
 	if err != nil {
@@ -920,5 +911,5 @@ func PolicyExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (boo
 
 // Exists checks if the Policy row exists.
 func (o *Policy) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
-	return PolicyExists(ctx, exec, o.ID)
+	return PolicyExists(ctx, exec, o.SRC, o.DST, o.Port, o.Protocol)
 }
