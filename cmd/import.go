@@ -25,6 +25,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 	"regexp"
 
 	// import sqlite3.
@@ -104,7 +105,9 @@ For example:
 			return errors.New("at least one of host|group|policy is required")
 		}
 
-		boil.DebugMode = true
+		if os.Getenv("DEBUG") != "" {
+			boil.DebugMode = true
+		}
 
 		var err error
 		db, err = sql.Open("sqlite3", "./sg.db")

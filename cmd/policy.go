@@ -24,6 +24,7 @@ package cmd
 import (
 	"context"
 	"encoding/csv"
+	"os"
 
 	// import sqlite3.
 	_ "github.com/mattn/go-sqlite3"
@@ -55,7 +56,9 @@ For example:
 			return errors.New("at least one of host|group|policy is required")
 		}
 
-		boil.DebugMode = true
+		if os.Getenv("DEBUG") != "" {
+			boil.DebugMode = true
+		}
 
 		var err error
 		db, err = sqlite.Conn("./sg.db")
