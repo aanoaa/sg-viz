@@ -66,7 +66,7 @@ For example:
 		b := new(strings.Builder)
 		fmt.Fprintln(b, "digraph {")
 		for _, row := range rows {
-			fmt.Fprintf(b, "  \"%s\" -> \"%s\" [label=\"%d\"] \n", row.Src, row.Dst, row.Port)
+			fmt.Fprintf(b, "  \"%s\" -> \"%s\" \n", row.Src, row.Dst)
 		}
 		fmt.Fprintln(b, "}")
 		stdout := cmd.OutOrStdout()
