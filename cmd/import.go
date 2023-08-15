@@ -34,9 +34,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 
-	sqlite "github.com/aanoaa/sg-viz/internal/db"
-	"github.com/aanoaa/sg-viz/internal/reader"
-	"github.com/aanoaa/sg-viz/repo"
+	sqlite "github.com/aanoaa/sgviz/internal/db"
+	"github.com/aanoaa/sgviz/internal/reader"
+	"github.com/aanoaa/sgviz/repo"
 )
 
 // importCmd represents the import command.
@@ -59,13 +59,13 @@ The header and desc columns are optional.
 
 For example:
 
-  $ cat <<EOL | sg-viz import --host
+  $ cat <<EOL | sgviz import --host
   foo-host01,192.168.0.1
   foo-host02,192.168.0.2
   bar-vserver,10.0.0.1
   EOL
 
-  $ cat <<EOL | sg-viz import --host
+  $ cat <<EOL | sgviz import --host
   hostname,ipaddr,desc
   foo-host01,192.168.0.1,brief of host
   foo-host02,192.168.0.2,
@@ -81,7 +81,7 @@ The GROUP CSV format should look like this
 
 For example:
 
-  $ cat <<EOL | sg-viz import --group
+  $ cat <<EOL | sgviz import --group
   group,hostname
   foo,foo-host01
   foo,foo-host02
@@ -95,7 +95,7 @@ and The POLICY CSV format should look like this
 
 For example:
 
-  $ cat <<EOL | sg-viz import --policy
+  $ cat <<EOL | sgviz import --policy
   src,dst,port,desc
   foo,bar.example.com,8080,'foo to bar.example.com:8080'
   EOL

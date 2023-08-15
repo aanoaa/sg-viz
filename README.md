@@ -1,4 +1,4 @@
-# sg-viz
+# sgviz
 
 local SecurityGroup data Visualize and management.
 

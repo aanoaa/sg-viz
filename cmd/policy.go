@@ -32,8 +32,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 
-	sqlite "github.com/aanoaa/sg-viz/internal/db"
-	"github.com/aanoaa/sg-viz/repo"
+	sqlite "github.com/aanoaa/sgviz/internal/db"
+	"github.com/aanoaa/sgviz/repo"
 )
 
 // policyCmd represents the policy command.
@@ -43,11 +43,7 @@ var policyCmd = &cobra.Command{
 	Long: `Export policies as csv format.
 For example:
 
-  $ sg-viz policy --host
-  src,src_addr,dst,dst_addr,port,protocol
-  foo-host01,192.168.0.1,bar-vserver,10.0.0.1,8080,tcp
-
-  $ sg-viz policy --group
+  $ sgviz policy
   src,dst,port,protocol
   foo,bar.example.com,8080,tcp
 `,

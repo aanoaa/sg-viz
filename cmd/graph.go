@@ -31,7 +31,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/aanoaa/sg-viz/internal/reader"
+	"github.com/aanoaa/sgviz/internal/reader"
 )
 
 // graphCmd represents the graph command.
@@ -41,12 +41,12 @@ var graphCmd = &cobra.Command{
 	Long: `Print policies as dot format.
 For example:
 
-  $ sg-viz graph
+  $ sgviz graph
   digraph {
       "foo" -> "bar.example.com" [label="8080"]
   }
 
-  $ sg-viz graph | dot -Tsvg > example.svg
+  $ sgviz graph | dot -Tsvg > example.svg
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		re := regexp.MustCompile(`src,dst,port,protocol\n`)

@@ -9,8 +9,8 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 
-	"github.com/aanoaa/sg-viz/models"
-	"github.com/aanoaa/sg-viz/types"
+	"github.com/aanoaa/sgviz/models"
+	"github.com/aanoaa/sgviz/types"
 )
 
 type Policy struct {

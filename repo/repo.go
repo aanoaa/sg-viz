@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/aanoaa/sg-viz/models"
-	v1 "github.com/aanoaa/sg-viz/repo/v1"
-	"github.com/aanoaa/sg-viz/types"
+	"github.com/aanoaa/sgviz/models"
+	v1 "github.com/aanoaa/sgviz/repo/v1"
+	"github.com/aanoaa/sgviz/types"
 )
 
 type Host interface {

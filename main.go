@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/aanoaa/sg-viz/cmd"
+import "github.com/aanoaa/sgviz/cmd"
 
 func main() {
 	cmd.Execute()

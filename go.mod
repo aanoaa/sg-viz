@@ -1,4 +1,4 @@
-module github.com/aanoaa/sg-viz
+module github.com/aanoaa/sgviz
 
 go 1.20
 

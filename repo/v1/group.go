@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/aanoaa/sg-viz/models"
+	"github.com/aanoaa/sgviz/models"
 	"github.com/pkg/errors"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
