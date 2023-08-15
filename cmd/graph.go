@@ -55,6 +55,14 @@ For example:
 			return errors.Wrap(err, "stdin to csv fail")
 		}
 
+		if len(records) == 0 {
+			return errors.New("Empty input")
+		}
+
+		if len(records[0]) != 4 {
+			return errors.New("Unexpected format")
+		}
+
 		b := new(strings.Builder)
 		fmt.Fprintln(b, "digraph {")
 		for _, record := range records {
