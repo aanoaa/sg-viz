@@ -22,8 +22,8 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"context"
 	"fmt"
+	"regexp"
 	"strings"
 
 	// import sqlite3.
@@ -31,8 +31,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	sqlite "github.com/aanoaa/sg-viz/internal/db"
-	"github.com/aanoaa/sg-viz/repo"
+	"github.com/aanoaa/sg-viz/internal/reader"
 )
 
 // graphCmd represents the graph command.
@@ -50,23 +49,16 @@ For example:
   $ sg-viz graph | dot -Tsvg > example.svg
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		var err error
-		db, err = sqlite.Conn("./sg.db")
+		re := regexp.MustCompile(`src,dst,port,protocol\n`)
+		records, err := reader.StdinToCsv(re)
 		if err != nil {
-			return errors.Wrap(err, "db conn fail")
-		}
-
-		ctx := context.Background()
-		pr := repo.NewPolicyRepo(db)
-		rows, err := pr.ListGroup(ctx)
-		if err != nil {
-			return errors.Wrap(err, "list fail")
+			return errors.Wrap(err, "stdin to csv fail")
 		}
 
 		b := new(strings.Builder)
 		fmt.Fprintln(b, "digraph {")
-		for _, row := range rows {
-			fmt.Fprintf(b, "  \"%s\" -> \"%s\" \n", row.Src, row.Dst)
+		for _, record := range records {
+			fmt.Fprintf(b, "  \"%s\" -> \"%s\" \n", record[0], record[1])
 		}
 		fmt.Fprintln(b, "}")
 		stdout := cmd.OutOrStdout()
