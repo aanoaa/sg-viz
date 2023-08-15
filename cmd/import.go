@@ -34,6 +34,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 
+	sqlite "github.com/aanoaa/sg-viz/internal/db"
 	"github.com/aanoaa/sg-viz/internal/reader"
 	"github.com/aanoaa/sg-viz/repo"
 )
@@ -110,9 +111,9 @@ For example:
 		}
 
 		var err error
-		db, err = sql.Open("sqlite3", "./sg.db")
+		db, err = sqlite.Conn()
 		if err != nil {
-			return errors.Wrap(err, "db open fail")
+			return errors.Wrap(err, "db conn fail")
 		}
 
 		if isHost {

@@ -61,7 +61,7 @@ For example:
 		}
 
 		var err error
-		db, err = sqlite.Conn("./sg.db")
+		db, err = sqlite.Conn()
 		if err != nil {
 			return errors.Wrap(err, "db conn fail")
 		}
