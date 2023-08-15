@@ -6,6 +6,7 @@ import (
 
 	"github.com/aanoaa/sg-viz/models"
 	v1 "github.com/aanoaa/sg-viz/repo/v1"
+	"github.com/aanoaa/sg-viz/types"
 )
 
 type Host interface {
@@ -27,6 +28,8 @@ func NewGroupRepo(db *sql.DB) Group {
 }
 
 type Policy interface {
+	ListHost(ctx context.Context) ([]types.PolicyByHost, error)
+	ListGroup(ctx context.Context) ([]types.PolicyByGroup, error)
 	Upsert(ctx context.Context, record []string) error
 }
 
