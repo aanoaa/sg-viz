@@ -44,8 +44,8 @@ var policyCmd = &cobra.Command{
 For example:
 
   $ sgviz policy
-  src,dst,port,protocol
-  foo,bar.example.com,8080,tcp
+  src,src_zone,dst,dst_zone,port,protocol
+  foo,,bar.example.com,,8080,tcp
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if os.Getenv("DEBUG") != "" {

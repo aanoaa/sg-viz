@@ -1,7 +1,7 @@
 INSERT INTO `host` (`hostname`, `ipaddr`) VALUES
   ("foo-host01", "192.168.0.1"),
   ("foo-host02", "192.168.0.2"),
-  ("bar-vserver", "10.0.0.1");
+  ("bar.example.com", "");
 
 INSERT INTO `sgroup` (`name`) VALUES
   ("foo"),

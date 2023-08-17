@@ -82,7 +82,7 @@ JOIN host dh ON dh.id = dhg.host_id`)
 
 func (r *Policy) ListGroup(ctx context.Context) ([]types.PolicyByGroup, error) {
 	q := queries.Raw(`
-SELECT src.name AS src, dst.name AS dst, p.port, p.protocol
+SELECT src.name AS src, src.zone AS src_zone, dst.name AS dst, dst.zone AS dst_zone, p.port, p.protocol
 FROM policy p
 JOIN sgroup src ON src.id = p.src
 JOIN sgroup dst ON dst.id = p.dst

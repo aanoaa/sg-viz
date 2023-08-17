@@ -43,13 +43,13 @@ For example:
 
   $ sgviz graph
   digraph {
-      "foo" -> "bar.example.com" [label="8080"]
+      "foo" -> "bar.example.com"
   }
 
   $ sgviz graph | dot -Tsvg > example.svg
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		re := regexp.MustCompile(`src,dst,port,protocol\n`)
+		re := regexp.MustCompile(`src,src_zone,dst,dst_zone,port,protocol\n`)
 		records, err := reader.StdinToCsv(re)
 		if err != nil {
 			return errors.Wrap(err, "stdin to csv fail")
@@ -59,14 +59,54 @@ For example:
 			return errors.New("Empty input")
 		}
 
-		if len(records[0]) != 4 {
+		if len(records[0]) != 6 {
 			return errors.New("Unexpected format")
 		}
 
-		b := new(strings.Builder)
-		fmt.Fprintln(b, "digraph {")
+		seen := make(map[string]bool)
+		zoneMap := make(map[string][]string)
 		for _, record := range records {
-			fmt.Fprintf(b, "  \"%s\" -> \"%s\" \n", record[0], record[1])
+			src, srcZone := record[0], record[1]
+
+			if seen[src] {
+				continue
+			}
+
+			// src, src_zone
+			zoneMap[srcZone] = append(zoneMap[srcZone], src)
+			seen[src] = true
+		}
+
+		for _, record := range records {
+			dst, dstZone := record[2], record[3]
+
+			if seen[dst] {
+				continue
+			}
+
+			// dst, dst_zone
+			zoneMap[dstZone] = append(zoneMap[dstZone], dst)
+			seen[dst] = true
+		}
+
+		zones := make([]string, 0, len(zoneMap))
+		for k := range zoneMap {
+			zones = append(zones, k)
+		}
+
+		b := new(strings.Builder)
+		fmt.Fprintln(b, "digraph G {")
+		for _, record := range records {
+			fmt.Fprintf(b, "  \"%s\" -> \"%s\" [label=\"%s\"]\n", record[0], record[2], record[4])
+		}
+
+		for _, zone := range zones {
+			fmt.Fprintf(b, "  subgraph cluster_%s {\n", zone)
+			fmt.Fprintf(b, "    label=\"%s\"\n", zone)
+			for _, grp := range zoneMap[zone] {
+				fmt.Fprintf(b, "    \"%s\";\n", grp)
+			}
+			fmt.Fprintf(b, "  }\n")
 		}
 		fmt.Fprintln(b, "}")
 		stdout := cmd.OutOrStdout()

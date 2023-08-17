@@ -23,44 +23,58 @@ import (
 
 // Sgroup is an object representing the database table.
 type Sgroup struct {
-	ID   int64  `boil:"id" json:"id" toml:"id" yaml:"id"`
-	Name string `boil:"name" json:"name" toml:"name" yaml:"name"`
-	Desc string `boil:"desc" json:"desc" toml:"desc" yaml:"desc"`
+	ID     int64  `boil:"id" json:"id" toml:"id" yaml:"id"`
+	Name   string `boil:"name" json:"name" toml:"name" yaml:"name"`
+	Ipaddr string `boil:"ipaddr" json:"ipaddr" toml:"ipaddr" yaml:"ipaddr"`
+	Zone   string `boil:"zone" json:"zone" toml:"zone" yaml:"zone"`
+	Desc   string `boil:"desc" json:"desc" toml:"desc" yaml:"desc"`
 
 	R *sgroupR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L sgroupL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var SgroupColumns = struct {
-	ID   string
-	Name string
-	Desc string
+	ID     string
+	Name   string
+	Ipaddr string
+	Zone   string
+	Desc   string
 }{
-	ID:   "id",
-	Name: "name",
-	Desc: "desc",
+	ID:     "id",
+	Name:   "name",
+	Ipaddr: "ipaddr",
+	Zone:   "zone",
+	Desc:   "desc",
 }
 
 var SgroupTableColumns = struct {
-	ID   string
-	Name string
-	Desc string
+	ID     string
+	Name   string
+	Ipaddr string
+	Zone   string
+	Desc   string
 }{
-	ID:   "sgroup.id",
-	Name: "sgroup.name",
-	Desc: "sgroup.desc",
+	ID:     "sgroup.id",
+	Name:   "sgroup.name",
+	Ipaddr: "sgroup.ipaddr",
+	Zone:   "sgroup.zone",
+	Desc:   "sgroup.desc",
 }
 
 // Generated where
 
 var SgroupWhere = struct {
-	ID   whereHelperint64
-	Name whereHelperstring
-	Desc whereHelperstring
+	ID     whereHelperint64
+	Name   whereHelperstring
+	Ipaddr whereHelperstring
+	Zone   whereHelperstring
+	Desc   whereHelperstring
 }{
-	ID:   whereHelperint64{field: "\"sgroup\".\"id\""},
-	Name: whereHelperstring{field: "\"sgroup\".\"name\""},
-	Desc: whereHelperstring{field: "\"sgroup\".\"desc\""},
+	ID:     whereHelperint64{field: "\"sgroup\".\"id\""},
+	Name:   whereHelperstring{field: "\"sgroup\".\"name\""},
+	Ipaddr: whereHelperstring{field: "\"sgroup\".\"ipaddr\""},
+	Zone:   whereHelperstring{field: "\"sgroup\".\"zone\""},
+	Desc:   whereHelperstring{field: "\"sgroup\".\"desc\""},
 }
 
 // SgroupRels is where relationship names are stored.
@@ -80,9 +94,9 @@ func (*sgroupR) NewStruct() *sgroupR {
 type sgroupL struct{}
 
 var (
-	sgroupAllColumns            = []string{"id", "name", "desc"}
+	sgroupAllColumns            = []string{"id", "name", "ipaddr", "zone", "desc"}
 	sgroupColumnsWithoutDefault = []string{"name"}
-	sgroupColumnsWithDefault    = []string{"id", "desc"}
+	sgroupColumnsWithDefault    = []string{"id", "ipaddr", "zone", "desc"}
 	sgroupPrimaryKeyColumns     = []string{"id"}
 	sgroupGeneratedColumns      = []string{"id"}
 )

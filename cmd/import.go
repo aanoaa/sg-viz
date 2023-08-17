@@ -27,8 +27,12 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
+	"unicode"
 
 	// import sqlite3.
+	"github.com/adrg/strutil"
+	"github.com/adrg/strutil/metrics"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -128,9 +132,11 @@ For example:
 }
 
 var (
-	isHost   bool
-	isGroup  bool
-	isPolicy bool
+	isHost              bool
+	isGroup             bool
+	isPolicy            bool
+	fromHost            bool
+	similarityThreshold float64
 
 	db *sql.DB
 )
@@ -140,6 +146,8 @@ func init() {
 	importCmd.Flags().BoolVarP(&isHost, "host", "", false, "given csv should be HOST format")
 	importCmd.Flags().BoolVarP(&isGroup, "group", "", false, "given csv should be GROUP format")
 	importCmd.Flags().BoolVarP(&isPolicy, "policy", "", false, "given csv should be POLICY format")
+	importCmd.Flags().BoolVarP(&fromHost, "from-host", "", false, "generate group records from host data")
+	similarityThreshold = *importCmd.Flags().Float64P("similarity", "", 1.0, "similarity threshold")
 	importCmd.MarkFlagsMutuallyExclusive("host", "group", "policy")
 }
 
@@ -159,31 +167,69 @@ func importHost(cmd *cobra.Command, _ []string) error {
 		if err := hr.Upsert(ctx, record); err != nil {
 			return errors.Wrap(err, "upsert fail")
 		}
-		fmt.Fprintln(stdout, len(record), record)
 	}
 
+	fmt.Fprintf(stdout, "Updated %d records successfully\n", len(records))
 	return nil
 }
 
 func importGroup(cmd *cobra.Command, _ []string) error {
 	stdout := cmd.OutOrStdout()
-	fmt.Fprintln(stdout, "<ctrl+d> to submit, <ctrl+c> to abort.")
+	stderr := cmd.ErrOrStderr()
+	hr := repo.NewHostRepo(db)
+	gr := repo.NewGroupRepo(db)
+	ctx := context.Background()
 
-	re := regexp.MustCompile(`group,hostname\n`)
+	if fromHost {
+		list, err := hr.List(ctx, "")
+		if err != nil {
+			return errors.Wrap(err, "list fail")
+		}
+
+		hosts := make([]string, len(list))
+		groupMap := make(map[string]bool)
+		for i, host := range list {
+			hosts[i] = host.Hostname
+			groupMap[strings.TrimFunc(host.Hostname, trimDigit)] = true
+		}
+		groups := make([]string, 0, len(groupMap))
+		for k := range groupMap {
+			groups = append(groups, k)
+		}
+
+		var similarity float64
+		hamming := metrics.NewHamming()
+		fmt.Fprintln(stdout, "group,hostname,zone")
+		for i := range groups {
+			for j := range hosts {
+				hostname := strings.TrimFunc(hosts[j], trimDigit)
+				similarity = strutil.Similarity(groups[i], hostname, hamming)
+				if similarity >= similarityThreshold {
+					if os.Getenv("DEBUG") != "" {
+						fmt.Fprintf(stderr, "%s|%s: %.2f\n", groups[i], hostname, similarity)
+					}
+					fmt.Fprintf(stdout, "%s,%s,\n", groups[i], hosts[j])
+				}
+			}
+		}
+
+		return nil
+	}
+
+	fmt.Fprintln(stdout, "<ctrl+d> to submit, <ctrl+c> to abort.")
+	re := regexp.MustCompile(`group,hostname,zone\n`)
 	records, err := reader.StdinToCsv(re)
 	if err != nil {
 		return errors.Wrap(err, "csv read fail")
 	}
 
-	ctx := context.Background()
 	for _, record := range records {
-		gr := repo.NewGroupRepo(db)
 		if err := gr.Upsert(ctx, record); err != nil {
 			return errors.Wrap(err, "upsert fail")
 		}
-		fmt.Fprintln(stdout, len(record), record)
 	}
 
+	fmt.Fprintf(stdout, "Updated %d records successfully\n", len(records))
 	return nil
 }
 
@@ -207,4 +253,8 @@ func importPolicy(cmd *cobra.Command, _ []string) error {
 	}
 
 	return nil
+}
+
+func trimDigit(r rune) bool {
+	return unicode.IsNumber(r)
 }

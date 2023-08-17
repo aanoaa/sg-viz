@@ -568,7 +568,7 @@ func testSgroupsSelect(t *testing.T) {
 }
 
 var (
-	sgroupDBTypes = map[string]string{`ID`: `INTEGER`, `Name`: `TEXT`, `Desc`: `TEXT`}
+	sgroupDBTypes = map[string]string{`ID`: `INTEGER`, `Name`: `TEXT`, `Ipaddr`: `TEXT`, `Zone`: `TEXT`, `Desc`: `TEXT`}
 	_             = bytes.MinRead
 )
 

@@ -13,7 +13,9 @@ type PolicyByHost struct {
 
 type PolicyByGroup struct {
 	Src      string `boil:"src"`
+	SrcZone  string `boil:"src_zone"`
 	Dst      string `boil:"dst"`
+	DstZone  string `boil:"dst_zone"`
 	Port     int    `boil:"port"`
 	Protocol string `boil:"protocol"`
 }
@@ -23,5 +25,5 @@ func (p PolicyByHost) ToStrings() []string {
 }
 
 func (p PolicyByGroup) ToStrings() []string {
-	return []string{p.Src, p.Dst, strconv.Itoa(p.Port), p.Protocol}
+	return []string{p.Src, p.SrcZone, p.Dst, p.DstZone, strconv.Itoa(p.Port), p.Protocol}
 }

@@ -15,6 +15,7 @@ require (
 )
 
 require (
+	github.com/adrg/strutil v0.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/google/uuid v1.3.0 // indirect

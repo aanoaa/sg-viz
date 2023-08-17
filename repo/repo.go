@@ -12,6 +12,7 @@ import (
 type Host interface {
 	FindByHostname(ctx context.Context, hostname string) (*models.Host, error)
 	Upsert(ctx context.Context, record []string) error
+	List(ctx context.Context, match string) (models.HostSlice, error)
 }
 
 func NewHostRepo(db *sql.DB) Host {

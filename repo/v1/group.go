@@ -37,10 +37,11 @@ func (r *Group) Upsert(ctx context.Context, record []string) error {
 
 	group := &models.Sgroup{
 		Name: record[0],
+		Zone: record[2],
 	}
 
 	if err := group.Upsert(ctx, r.db, true, []string{"name"},
-		boil.Whitelist("desc"), boil.Infer()); err != nil {
+		boil.Whitelist("ipaddr", "zone", "desc"), boil.Infer()); err != nil {
 		return errors.Wrap(err, "upsert fail")
 	}
 
