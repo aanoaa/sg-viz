@@ -19,7 +19,7 @@ func NewGroup(db *sql.DB) *Group {
 
 func (r *Group) FindByName(ctx context.Context, name string) (*models.Sgroup, error) {
 	group, err := models.Sgroups(models.SgroupWhere.Name.EQ(name)).One(ctx, r.db)
-	return group, errors.Wrap(err, "find fail")
+	return group, errors.Wrapf(err, "find group fail: %s", name)
 }
 
 func (r *Group) Upsert(ctx context.Context, record []string) error {
@@ -32,7 +32,7 @@ func (r *Group) Upsert(ctx context.Context, record []string) error {
 	hr := NewHost(r.db)
 	host, err := hr.FindByHostname(ctx, record[1])
 	if err != nil {
-		return errors.Wrap(err, "find host fail")
+		return errors.Wrapf(err, "find host fail: %s", record[1])
 	}
 
 	group := &models.Sgroup{

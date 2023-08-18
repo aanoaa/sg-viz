@@ -30,10 +30,9 @@ import (
 	"strings"
 	"unicode"
 
-	// import sqlite3.
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // import sqlite3.
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -210,6 +209,13 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 					}
 					fmt.Fprintf(stdout, "%s,%s,\n", groups[i], hosts[j])
 				}
+
+				groupname := strings.Join(strings.Split(groups[i], "-")[1:], "-")
+				hostname = strings.Join(strings.Split(hostname, "-")[1:], "-")
+				similarity = strutil.Similarity(groupname, hostname, hamming)
+				if similarity >= similarityThreshold {
+					fmt.Fprintf(stdout, "%s,%s,\n", groupname, hosts[j])
+				}
 			}
 		}
 
@@ -225,7 +231,7 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 
 	for _, record := range records {
 		if err := gr.Upsert(ctx, record); err != nil {
-			return errors.Wrap(err, "upsert fail")
+			return errors.Wrapf(err, "upsert fail: %v", record)
 		}
 	}
 

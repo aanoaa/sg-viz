@@ -26,8 +26,7 @@ import (
 	"regexp"
 	"strings"
 
-	// import sqlite3.
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // import sqlite3.
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 

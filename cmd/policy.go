@@ -26,8 +26,7 @@ import (
 	"encoding/csv"
 	"os"
 
-	// import sqlite3.
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/mattn/go-sqlite3" // import sqlite3.
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/volatiletech/sqlboiler/v4/boil"

@@ -20,10 +20,22 @@ func NewHost(db *sql.DB) *Host {
 
 func (r *Host) FindByHostname(ctx context.Context, hostname string) (*models.Host, error) {
 	host, err := models.Hosts(models.HostWhere.Hostname.EQ(hostname)).One(ctx, r.db)
-	return host, errors.Wrap(err, "find fail")
+	return host, errors.Wrapf(err, "find fail: %s", hostname)
 }
 
 func (r *Host) Upsert(ctx context.Context, record []string) error {
+	var hostname, ipaddr, desc string
+	switch len(record) {
+	case 1:
+		hostname = record[0]
+	case 2:
+		hostname, ipaddr = record[0], record[1]
+	case 3:
+		hostname, ipaddr, desc = record[0], record[1], record[2]
+	default:
+		return errors.Errorf("Unexpected format: %v", record)
+	}
+
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return errors.Wrap(err, "begin tx fail")
@@ -31,11 +43,9 @@ func (r *Host) Upsert(ctx context.Context, record []string) error {
 	defer func() { _ = tx.Rollback() }()
 
 	host := models.Host{
-		Hostname: record[0],
-		Ipaddr:   record[1],
-	}
-	if len(record) == 3 {
-		host.Desc = record[2]
+		Hostname: hostname,
+		Ipaddr:   ipaddr,
+		Desc:     desc,
 	}
 
 	if err := host.Upsert(ctx, r.db, true, []string{"hostname"},
@@ -59,4 +69,21 @@ func (r *Host) List(ctx context.Context, match string) (models.HostSlice, error)
 		list, err = models.Hosts(qm.Where("hostname LIKE ?", "%"+match+"%")).All(ctx, r.db)
 	}
 	return list, errors.Wrap(err, "query fail")
+}
+
+func (r *Host) ListByGroupID(ctx context.Context, groupID int64) (models.HostSlice, error) {
+	hostGroups, err := models.HostSgroups(models.HostSgroupWhere.SgroupID.EQ(groupID)).All(ctx, r.db)
+	if err != nil {
+		return nil, errors.Wrap(err, "host_sgroup query fail")
+	}
+
+	var hosts models.HostSlice
+	for _, hg := range hostGroups {
+		host, err := models.FindHost(ctx, r.db, hg.HostID)
+		if err != nil {
+			return nil, errors.Wrapf(err, "find host fail: %d", hg.HostID)
+		}
+		hosts = append(hosts, host)
+	}
+	return hosts, nil
 }
