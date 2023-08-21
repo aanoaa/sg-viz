@@ -201,20 +201,36 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 		fmt.Fprintln(stdout, "group,hostname,zone")
 		for i := range groups {
 			for j := range hosts {
-				hostname := strings.TrimFunc(hosts[j], trimDigit)
-				similarity = strutil.Similarity(groups[i], hostname, hamming)
+				group := groups[i]                                 // foo-bar-baz
+				hostname := hosts[j]                               // foo-bar-baz01
+				hostnameT := strings.TrimFunc(hostname, trimDigit) // foo-bar-baz
+
+				groupSplit := strings.Split(group, "-")    // foo,bar,baz01
+				hostSplit := strings.Split(hostnameT, "-") // foo,bar,baz
+
+				// foo-bar-baz
+				similarity = strutil.Similarity(group, hostnameT, hamming)
 				if similarity >= similarityThreshold {
 					if os.Getenv("DEBUG") != "" {
-						fmt.Fprintf(stderr, "%s|%s: %.2f\n", groups[i], hostname, similarity)
+						fmt.Fprintf(stderr, "%s|%s: %.2f\n", group, hostnameT, similarity)
 					}
-					fmt.Fprintf(stdout, "%s,%s,\n", groups[i], hosts[j])
+					fmt.Fprintf(stdout, "%s,%s,\n", group, hostname)
 				}
 
-				groupname := strings.Join(strings.Split(groups[i], "-")[1:], "-")
-				hostname = strings.Join(strings.Split(hostname, "-")[1:], "-")
-				similarity = strutil.Similarity(groupname, hostname, hamming)
+				// bar-baz
+				a := strings.Join(groupSplit[1:], "-")
+				b := strings.Join(hostSplit[1:], "-")
+				similarity = strutil.Similarity(a, b, hamming)
 				if similarity >= similarityThreshold {
-					fmt.Fprintf(stdout, "%s,%s,\n", groupname, hosts[j])
+					fmt.Fprintf(stdout, "%s,%s,\n", a, hostname)
+				}
+
+				// foo-bar
+				a = strings.Join(groupSplit[:len(groupSplit)-1], "-")
+				b = strings.Join(hostSplit[:len(hostSplit)-1], "-")
+				similarity = strutil.Similarity(a, b, hamming)
+				if similarity >= similarityThreshold {
+					fmt.Fprintf(stdout, "%s,%s,\n", a, hostname)
 				}
 			}
 		}
