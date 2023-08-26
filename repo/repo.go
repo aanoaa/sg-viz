@@ -23,6 +23,7 @@ func NewHostRepo(db *sql.DB) Host {
 type Group interface {
 	FindByName(ctx context.Context, name string) (*models.Sgroup, error)
 	Upsert(ctx context.Context, record []string) error
+	List(ctx context.Context, match string) (models.SgroupSlice, error)
 }
 
 func NewGroupRepo(db *sql.DB) Group {

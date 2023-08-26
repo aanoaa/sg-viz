@@ -7,6 +7,7 @@ import (
 	"github.com/aanoaa/sgviz/models"
 	"github.com/pkg/errors"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type Group struct {
@@ -62,4 +63,15 @@ func (r *Group) Upsert(ctx context.Context, record []string) error {
 	}
 
 	return nil
+}
+
+func (r *Group) List(ctx context.Context, match string) (models.SgroupSlice, error) {
+	var list models.SgroupSlice
+	var err error
+	if match == "" {
+		list, err = models.Sgroups().All(ctx, r.db)
+	} else {
+		list, err = models.Sgroups(qm.Where("name LIKE ?", "%"+match+"%")).All(ctx, r.db)
+	}
+	return list, errors.Wrap(err, "query fail")
 }
