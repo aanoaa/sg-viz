@@ -24,6 +24,7 @@ func StdinToCsv(re *regexp.Regexp) (record [][]string, err error) {
 	}
 
 	r := csv.NewReader(bytes.NewReader(b))
+	r.Comment = '#'
 	if header {
 		_, _ = r.Read()
 	}
