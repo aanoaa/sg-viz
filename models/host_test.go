@@ -568,7 +568,7 @@ func testHostsSelect(t *testing.T) {
 }
 
 var (
-	hostDBTypes = map[string]string{`ID`: `INTEGER`, `Hostname`: `TEXT`, `Ipaddr`: `TEXT`, `Desc`: `TEXT`}
+	hostDBTypes = map[string]string{`ID`: `INTEGER`, `Hostname`: `TEXT`, `Ipaddr`: `TEXT`, `Zone`: `TEXT`, `Desc`: `TEXT`}
 	_           = bytes.MinRead
 )
 
