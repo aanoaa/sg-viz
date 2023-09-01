@@ -136,6 +136,7 @@ var (
 	isPolicy            bool
 	fromHost            bool
 	similarityThreshold float64
+	zone                string
 
 	db *sql.DB
 )
@@ -146,6 +147,8 @@ func init() {
 	importCmd.Flags().BoolVarP(&isGroup, "group", "", false, "given csv should be GROUP format")
 	importCmd.Flags().BoolVarP(&isPolicy, "policy", "", false, "given csv should be POLICY format")
 	importCmd.Flags().BoolVarP(&fromHost, "from-host", "", false, "generate group records from host data")
+	importCmd.Flags().StringVarP(&zone, "zone", "z", "", "zone name where host located")
+
 	similarityThreshold = *importCmd.Flags().Float64P("similarity", "", 1.0, "similarity threshold")
 	importCmd.MarkFlagsMutuallyExclusive("host", "group", "policy")
 }
@@ -163,7 +166,7 @@ func importHost(cmd *cobra.Command, _ []string) error {
 	ctx := context.Background()
 	for _, record := range records {
 		hr := repo.NewHostRepo(db)
-		if err := hr.Upsert(ctx, record); err != nil {
+		if err := hr.Upsert(ctx, record, zone); err != nil {
 			return errors.Wrap(err, "upsert fail")
 		}
 	}
@@ -186,9 +189,11 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 		}
 
 		hosts := make([]string, len(list))
+		zones := make([]string, len(list))
 		groupMap := make(map[string]bool)
 		for i, host := range list {
 			hosts[i] = host.Hostname
+			zones[i] = host.Zone
 			groupMap[strings.TrimFunc(host.Hostname, trimDigit)] = true
 		}
 		groups := make([]string, 0, len(groupMap))
@@ -201,6 +206,7 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 		fmt.Fprintln(stdout, "group,hostname,zone")
 		for i := range groups {
 			for j := range hosts {
+				zone := zones[j]
 				group := groups[i]                                 // foo-bar-baz
 				hostname := hosts[j]                               // foo-bar-baz01
 				hostnameT := strings.TrimFunc(hostname, trimDigit) // foo-bar-baz
@@ -214,7 +220,7 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 					if os.Getenv("DEBUG") != "" {
 						fmt.Fprintf(stderr, "%s|%s: %.2f\n", group, hostnameT, similarity)
 					}
-					fmt.Fprintf(stdout, "%s,%s,\n", group, hostname)
+					fmt.Fprintf(stdout, "%s,%s,%s\n", group, hostname, zone)
 				}
 
 				// bar-baz
@@ -222,7 +228,7 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 				b := strings.Join(hostSplit[1:], "-")
 				similarity = strutil.Similarity(a, b, hamming)
 				if similarity >= similarityThreshold {
-					fmt.Fprintf(stdout, "%s,%s,\n", a, hostname)
+					fmt.Fprintf(stdout, "%s,%s,%s\n", a, hostname, zone)
 				}
 
 				// foo-bar
@@ -230,7 +236,7 @@ func importGroup(cmd *cobra.Command, _ []string) error {
 				b = strings.Join(hostSplit[:len(hostSplit)-1], "-")
 				similarity = strutil.Similarity(a, b, hamming)
 				if similarity >= similarityThreshold {
-					fmt.Fprintf(stdout, "%s,%s,\n", a, hostname)
+					fmt.Fprintf(stdout, "%s,%s,%s\n", a, hostname, zone)
 				}
 			}
 		}

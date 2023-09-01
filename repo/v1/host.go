@@ -23,7 +23,7 @@ func (r *Host) FindByHostname(ctx context.Context, hostname string) (*models.Hos
 	return host, errors.Wrapf(err, "find fail: %s", hostname)
 }
 
-func (r *Host) Upsert(ctx context.Context, record []string) error {
+func (r *Host) Upsert(ctx context.Context, record []string, zone string) error {
 	var hostname, ipaddr, desc string
 	switch len(record) {
 	case 1:
@@ -46,6 +46,7 @@ func (r *Host) Upsert(ctx context.Context, record []string) error {
 		Hostname: hostname,
 		Ipaddr:   ipaddr,
 		Desc:     desc,
+		Zone:     zone,
 	}
 
 	if err := host.Upsert(ctx, r.db, true, []string{"hostname"},

@@ -12,7 +12,7 @@ import (
 type Host interface {
 	FindByHostname(ctx context.Context, hostname string) (*models.Host, error)
 	ListByGroupID(ctx context.Context, groupID int64) (models.HostSlice, error)
-	Upsert(ctx context.Context, record []string) error
+	Upsert(ctx context.Context, record []string, zone string) error
 	List(ctx context.Context, match string) (models.HostSlice, error)
 }
 

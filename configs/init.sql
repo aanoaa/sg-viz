@@ -2,6 +2,7 @@ CREATE TABLE `host` (
   `id`       INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   `hostname` TEXT NOT NULL UNIQUE,
   `ipaddr`   TEXT NOT NULL DEFAULT '',
+  `zone`     TEXT NOT NULL DEFAULT '',
   `desc`     TEXT NOT NULL DEFAULT ''
 );
 

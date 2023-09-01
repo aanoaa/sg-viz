@@ -26,6 +26,7 @@ type Host struct {
 	ID       int64  `boil:"id" json:"id" toml:"id" yaml:"id"`
 	Hostname string `boil:"hostname" json:"hostname" toml:"hostname" yaml:"hostname"`
 	Ipaddr   string `boil:"ipaddr" json:"ipaddr" toml:"ipaddr" yaml:"ipaddr"`
+	Zone     string `boil:"zone" json:"zone" toml:"zone" yaml:"zone"`
 	Desc     string `boil:"desc" json:"desc" toml:"desc" yaml:"desc"`
 
 	R *hostR `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -36,11 +37,13 @@ var HostColumns = struct {
 	ID       string
 	Hostname string
 	Ipaddr   string
+	Zone     string
 	Desc     string
 }{
 	ID:       "id",
 	Hostname: "hostname",
 	Ipaddr:   "ipaddr",
+	Zone:     "zone",
 	Desc:     "desc",
 }
 
@@ -48,11 +51,13 @@ var HostTableColumns = struct {
 	ID       string
 	Hostname string
 	Ipaddr   string
+	Zone     string
 	Desc     string
 }{
 	ID:       "host.id",
 	Hostname: "host.hostname",
 	Ipaddr:   "host.ipaddr",
+	Zone:     "host.zone",
 	Desc:     "host.desc",
 }
 
@@ -108,11 +113,13 @@ var HostWhere = struct {
 	ID       whereHelperint64
 	Hostname whereHelperstring
 	Ipaddr   whereHelperstring
+	Zone     whereHelperstring
 	Desc     whereHelperstring
 }{
 	ID:       whereHelperint64{field: "\"host\".\"id\""},
 	Hostname: whereHelperstring{field: "\"host\".\"hostname\""},
 	Ipaddr:   whereHelperstring{field: "\"host\".\"ipaddr\""},
+	Zone:     whereHelperstring{field: "\"host\".\"zone\""},
 	Desc:     whereHelperstring{field: "\"host\".\"desc\""},
 }
 
@@ -133,9 +140,9 @@ func (*hostR) NewStruct() *hostR {
 type hostL struct{}
 
 var (
-	hostAllColumns            = []string{"id", "hostname", "ipaddr", "desc"}
+	hostAllColumns            = []string{"id", "hostname", "ipaddr", "zone", "desc"}
 	hostColumnsWithoutDefault = []string{"hostname"}
-	hostColumnsWithDefault    = []string{"id", "ipaddr", "desc"}
+	hostColumnsWithDefault    = []string{"id", "ipaddr", "zone", "desc"}
 	hostPrimaryKeyColumns     = []string{"id"}
 	hostGeneratedColumns      = []string{"id"}
 )
