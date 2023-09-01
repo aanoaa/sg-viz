@@ -96,7 +96,7 @@ For example:
 		b := new(strings.Builder)
 		fmt.Fprintln(b, "digraph G {")
 		for _, record := range records {
-			fmt.Fprintf(b, "  \"%s\" -> \"%s\" [label=\"%s\"]\n", record[0], record[2], record[4])
+			fmt.Fprintf(b, "  \"%s\" -> \"%s\" [label=\"%s\" fontsize=\"8\"]\n", record[0], record[2], record[4])
 		}
 
 		for _, zone := range zones {
