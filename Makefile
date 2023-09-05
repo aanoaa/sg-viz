@@ -28,3 +28,13 @@ clean:
 .PHONY: schema
 schema:
 	sqlboiler sqlite3
+
+.PHONY: import
+import:
+	$(SQLITE) $(DB_FILE) < data/sql/data.sql
+
+.PHONY: export
+export:
+	$(SQLITE) $(DB_FILE) .schema > data/sql/schema.sql
+	$(SQLITE) $(DB_FILE) .dump > data/sql/dump.sql
+	grep -vx -f data/sql/schema.sql data/sql/dump.sql > data/sql/data.sql
